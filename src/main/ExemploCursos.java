@@ -3,6 +3,10 @@ package main;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.OptionalDouble;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ExemploCursos {
 	
@@ -15,19 +19,42 @@ public class ExemploCursos {
     	cursos.add(new Curso("Java 8", 113));
     	cursos.add(new Curso("C", 55));
     	
-    	cursos.sort(Comparator.comparing(Curso::getQuantidadeAlunos));
+    	cursos.sort(Comparator.comparingInt(Curso::getQuantidadeAlunos));
     	
-    	cursos.stream()
-    		.filter(curso -> curso.getQuantidadeAlunos() > 50)
-    		.map(Curso::getQuantidadeAlunos)
-    		.forEach(System.out::println);
+    	int sum = cursos.stream()
+    				.filter(curso -> curso.getQuantidadeAlunos() >= 100)
+    				.mapToInt(Curso::getQuantidadeAlunos)
+    				.sum();
     	
     	cursos.stream().map(Curso::getNome);
     	
+    	System.out.println(sum);
+    	
     	cursos.stream()
-    	   .filter(curso -> curso.getQuantidadeAlunos() > 50)
-    	   .map(Curso::getQuantidadeAlunos)
-    	   .forEach(x -> System.out.println(x));
+    		.filter(curso -> curso.getQuantidadeAlunos() >= 100)
+    		.findAny()
+    		.ifPresent(curso -> System.out.println(curso.getNome()));
+    	
+    	cursos.parallelStream()
+    		.filter(curso -> curso.getQuantidadeAlunos() >= 100)
+    		.collect(Collectors.toMap(curso -> curso.getNome(), curso -> curso.getQuantidadeAlunos()))
+    		.forEach((nome, quantidadeAlunos) -> System.out.println(nome + " tem " + quantidadeAlunos));
+    	
+    	cursos.stream()
+    	   .filter(c -> c.getQuantidadeAlunos() > 50)
+    	   .findFirst();
+    	
+    	double average = cursos.stream()
+    		.mapToDouble(Curso::getQuantidadeAlunos)
+    		.average()
+    		.getAsDouble();
+    	
+    	System.out.println(average);
+    	
+    	@SuppressWarnings("unused")
+		List<Curso> collect = cursos.stream()
+		   .filter(c -> c.getQuantidadeAlunos() > 50)
+		   .collect(Collectors.toList());
     	
 	}
     
